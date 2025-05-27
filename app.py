@@ -195,16 +195,20 @@ with tab1:
         if cdomiciliar:
             endereco = st.text_input("Endereço")
     with col3:
-        criar = st.checkbox("Criar uma nova planilha")
-        if criar:
-            titulo = st.text_input("Qual o nome da nova planilha")
-
+        if tabelaExcel is not None:
+            criar = st.checkbox("Criar uma nova planilha")
+            if criar:
+                titulo = st.text_input("Qual o nome da nova planilha")
+                if titulo:  # Só tenta se tiver título
+                    try:
+                        with pd.ExcelWriter(tabelaExcel, engine="openpyxl", mode="a") as writer:
+                            nova_aba.to_excel(writer, sheet_name=titulo, index=False)
             
-            # 2) Usa ExcelWriter em modo append
-            with pd.ExcelWriter("Pasta 1.xlsx", engine="openpyxl", mode="a") as writer:
-                # 3) Grava como aba “Estoque” sem tocar nas outras
-                nova_aba.to_excel(writer, sheet_name=titulo, index=False)
-                # Se “Estoque” já existir, dará erro – basta escolher outro nome.
+                            st.success(f"Aba '{titulo}' criada com sucesso!")
+                    except ValueError as e:
+                        st.error(f"Erro: provavelmente a aba '{titulo}' já existe.")
+                    except Exception as e:
+                        st.error(f"Erro inesperado: {e}")
 
             
     st.markdown("---")  # linha divisória
