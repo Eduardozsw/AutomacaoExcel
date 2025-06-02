@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import io
 
-
+if "marcacoes" not in st.session_state:
+    st.session_state.marcacoes = []
 
 st.set_page_config(page_title="Secretaria de Saúde", layout="wide")
 
