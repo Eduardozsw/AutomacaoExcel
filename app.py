@@ -20,14 +20,14 @@ if "df" not in st.session_state:
 with tab2:
     termo = st.text_input("Pesquisar")
     coluna_escolhida = st.selectbox(
-        "Escolha a coluna para pesquisa", ["PACIENTE", "PROFISIONAL SOLICITANTE", "SUS"]
+        "Escolha a coluna para pesquisa", ["Paciente", "Profissional solicitante", "SUS"]
     )
 
     tabelaExcel = st.file_uploader("Escolha um arquivo XLSX", type="xlsx")
     if not tabelaExcel == None:
         dfs = pd.read_excel(tabelaExcel, sheet_name=None, header=0)
         xls = pd.ExcelFile(tabelaExcel)
-        abas = xls.sheet_names
+        aba = xls.sheet_names
 
         for nome_planilha, df in dfs.items():
             if nome_planilha in ["Início", "Fim", "Mensal"]:
@@ -193,8 +193,8 @@ with tab1:
             "TROPONINA",
         ],
     )
-    if abas is not None:
-        planilha = st.pills("Qual planilha você deseja marcar", options=abas)
+    if tabelaExcel is not None:
+        planilha = st.pills("Qual planilha você deseja marcar", options=aba)
 
     st.write("Exames selecionados:", options)
 
