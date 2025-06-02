@@ -121,6 +121,7 @@ with tab1:
             "CLORETO",
             "COOMBS INDIRETO",
             "CPK",
+            "CA 125",
             "CPK-MB",
             "DHL - DESIDROGENASE LÁTICA",
             "ELETROFORESE DE HEMOGLOBINA",
@@ -197,38 +198,48 @@ with tab1:
 
     st.write("Exames selecionados:", options)
 
-    if st.button("Confirmar marcação"):
-        new_row = {
+    if st.button("Adicionar marcação"):
+        nova_marcacao = {
             "Paciente": paciente,
             "Data Nascimento": data,
             "Nº TELEFONE": telefone,
-            "PROFISSIONAL SOLICITANTE": psolicitante,
+            "Profissional solicitante": psolicitante,
             "CPF": cpf,
             "SUS": sus,
-            "COLETA DOMICILIAR": cdomiciliar,
-            "CONSELHO": conselho,
-            "ENDERECO": endereco,
+            "Coleta domiciliar": cdomiciliar,
+            "Conselho": conselho,
+            "ENDERECO   ": endereco,
         }
         for exame in options:
-            new_row[exame] = 1
+            nova_marcacao[exame] = 1
 
+        st.session_state.marcacoes.append(nova_marcacao)
+        st.success("Marcação adicionada")
+
+
+        if st.session_state.marcacoes:
+            st.subheader("Marcações pendentes:")
+            st.dataframe(pd.DataFrame(st.session_state.marcacoes))
+
+    if st.button("Salvar todas as marcações"):
         dfe = pd.read_excel(tabelaExcel, sheet_name=planilha)
-
-        dfe = pd.concat(
-            [dfe, pd.DataFrame([new_row])], ignore_index=True
-        )
+        novas_linhas = pd.DataFrame(st.session_state.marcacoes)
+        dfe = pd.concat([dfe, novas_linhas], ignore_index=True)
 
         output = io.BytesIO()
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
-            # regrava todas as abas, incluindo a atualizada
             for nome, aba_df in dfs.items():
                 if nome == planilha:
-                    aba_df = dfe  # usa a planilha atualizada
+                    aba_df = dfe
                 aba_df.to_excel(writer, sheet_name=nome, index=False)
 
-        st.success("Exame marcado com sucesso")
-        st.download_button("Baixar nova planilha", data=output.getvalue(), file_name="planilha_atualizada.xlsx")
+        st.download_button(
+            "Baixar nova planilha com todas as marcações",
+            data=output.getvalue(),
+            file_name="planilha_atualizada.xlsx",
+        )
 
+        st.session_state.marcacoes = []
 
         st.success("Exame marcado com sucesso")
         st.dataframe(dfe)
