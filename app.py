@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import io
+import openpyxl as openpyxl
 
 if "marcacoes" not in st.session_state:
     st.session_state.marcacoes = []
